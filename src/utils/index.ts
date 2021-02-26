@@ -1,13 +1,13 @@
-import chalk = require("chalk");
+import chalk = require('chalk');
 
 function yes(o: any) {
-  if (typeof 0 === "boolean") {
+  if (typeof 0 === 'boolean') {
     return o;
   }
 
   let b = o !== undefined && o !== null;
-  if (b && typeof o === "string") {
-    b = b && o !== "";
+  if (b && typeof o === 'string') {
+    b = b && o !== '';
   }
 
   return b;
@@ -27,7 +27,7 @@ const conprint = {
     }
   },
   error: (msg: string | Error) => {
-    if (typeof msg === "string") {
+    if (typeof msg === 'string') {
       if (msg.length > 0) {
         console.log(chalk.red(msg));
       }
@@ -49,63 +49,46 @@ const conprint = {
     if (msg && msg.length > 0) {
       console.log(msg);
     }
-  },
+  }
 };
 
-import inquirer from "inquirer";
+import inquirer from 'inquirer';
 
-const askInput = async (
-  name: string = "input",
-  message: string = "Enter input"
-) => {
+const askInput = async (name: string = 'input', message: string = 'Enter input') => {
   const result = await inquirer.prompt({
-    type: "input",
+    type: 'input',
     name,
-    message,
+    message
   });
 
   return result[name];
 };
 
 const askSelect = async (
-  name: string = "choice",
-  message: string = "Select choice",
+  name: string = 'choice',
+  message: string = 'Select choice',
   choices: any[],
   multiple = false
 ) => {
   if (choices && choices.length > 0) {
     const result = await inquirer.prompt({
-      type: yes(multiple) ? "checkbox" : "list",
+      type: yes(multiple) ? 'checkbox' : 'list',
       name,
       message,
-      choices,
+      choices
     });
 
-    return result[name] || "";
+    return result[name] || '';
   }
-  return "";
+  return '';
 };
 
-const askSelectMultiple = async (
-  name: string = "choice",
-  message: string = "Select choice",
-  choices: any[]
-) => {
+const askSelectMultiple = async (name: string = 'choice', message: string = 'Select choice', choices: any[]) => {
   return await askSelect(name, message, choices, true);
 };
 
 function isYesInput(value: any) {
-  return (
-    value && value.length && (value === "yes" || value === "y" || value === "1")
-  );
+  return value && value.length && (value === 'yes' || value === 'y' || value === '1');
 }
 
-export {
-  yes,
-  no,
-  isYesInput,
-  conprint,
-  askInput,
-  askSelect,
-  askSelectMultiple,
-};
+export { yes, no, isYesInput, conprint, askInput, askSelect, askSelectMultiple };

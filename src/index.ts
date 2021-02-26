@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { exec, ExecException, SendHandle, Serializable } from "child_process";
-import yargs from "yargs";
+import { exec, ExecException, SendHandle, Serializable } from 'child_process';
+import yargs from 'yargs';
 
 export type Stringx = string | null | undefined;
 
@@ -35,15 +35,15 @@ export const cliyargs = {
    * Get the arguments string passed to the cli command for the calling context.
    */
   getCommandArgs(): string {
-    let command = "";
+    let command = '';
 
     process.argv.forEach((entry, i) => {
       if (i > 1) {
-        command += entry + " ";
+        command += entry + ' ';
       }
     });
 
-    return command.replace(/\s+$/, "");
+    return command.replace(/\s+$/, '');
   },
 
   /**
@@ -52,24 +52,21 @@ export const cliyargs = {
    */
   parseArgv(argv: any): ICommandInfo {
     let commandInfo: ICommandInfo = {
-      name: "",
+      name: '',
       args: [],
-      options: {},
+      options: {}
     };
 
     if (!argv._) {
       return {
-        name: "",
+        name: '',
         options: {},
-        args: [],
+        args: []
       };
     }
 
     const commands = argv._;
-    commandInfo.name = (commands && commands.length > 0
-      ? commands[0]
-      : ""
-    ).trim();
+    commandInfo.name = (commands && commands.length > 0 ? commands[0] : '').trim();
 
     argv._.forEach((arg: string, idx: number) => {
       if (idx > 0) {
@@ -78,10 +75,10 @@ export const cliyargs = {
     });
 
     for (let o in argv) {
-      if (argv.hasOwnProperty(o) && o !== "_" && o !== "$0") {
+      if (argv.hasOwnProperty(o) && o !== '_' && o !== '$0') {
         commandInfo.options = {
           ...commandInfo.options,
-          [o]: argv[o],
+          [o]: argv[o]
         };
       }
     }
@@ -94,10 +91,7 @@ export const cliyargs = {
    * @param commandInfo Info about the command
    * @param processorCb Callback function in which to process the command as preferred.
    */
-  async processCommand(
-    commandInfo: ICommandInfo,
-    processorCb: (commandName: string) => void
-  ) {
+  async processCommand(commandInfo: ICommandInfo, processorCb: (commandName: string) => void) {
     let mainCommand = commandInfo.name;
 
     // Protect from dangerous commands
@@ -113,7 +107,7 @@ export const cliyargs = {
     }
 
     switch (mainCommand) {
-      case "version":
+      case 'version':
         console.log(process.version);
         break;
 
@@ -121,7 +115,7 @@ export const cliyargs = {
         processorCb(mainCommand);
         break;
     }
-  },
+  }
 };
 
 export const execShellCmd = async (cmd: string): Promise<string> => {

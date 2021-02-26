@@ -1,4 +1,4 @@
-import {execShellCmd, ICommandInfo, IBaseCmdOptions, Stringx} from './';
+import { execShellCmd, ICommandInfo, IBaseCmdOptions, Stringx } from './';
 
 export class BaseCmd {
   public commandInfo: ICommandInfo;
@@ -22,8 +22,7 @@ export class BaseCmd {
   /**
    * Executes actions to run the command.
    */
-  async run() {
-  }
+  async run() {}
 
   protected async exec(cmd: string): Promise<string> {
     try {

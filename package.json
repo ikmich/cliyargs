@@ -37,5 +37,15 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ikmich/cliyargs"
+  },
+  "maintainers": [
+    "Ikenna Agbasimalo <michfx@gmail.com>"
+  ],
+  "prettier": {
+    "printWidth": 120,
+    "semi": true,
+    "trailingComma": "none",
+    "singleQuote": true,
+    "tabWidth": 2
   }
 }
