@@ -57,6 +57,14 @@ export const cliyargs = {
       options: {},
     };
 
+    if (!argv._) {
+      return {
+        name: "",
+        options: {},
+        args: [],
+      };
+    }
+
     const commands = argv._;
     commandInfo.name = (commands && commands.length > 0
       ? commands[0]
