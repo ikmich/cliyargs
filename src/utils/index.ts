@@ -96,11 +96,7 @@ const askSelectMultiple = async (
 
 function isYesInput(value: any) {
   return (
-    value &&
-    value.length &&
-    (value === "yes" ||
-      value === "y" ||
-      value === "1")
+    value && value.length && (value === "yes" || value === "y" || value === "1")
   );
 }
 
