@@ -1,14 +1,12 @@
 {
   "name": "cliyargs",
-  "version": "0.0.1-alpha",
+  "version": "0.0.2-alpha",
   "description": "Helpers to build cli apps using yargs",
   "main": "lib/index.js",
   "scripts": {
     "build": "rm -rf lib && tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "yarn build",
-    "postinstall": "yarn build",
-    "prepare": "yarn build",
     "watch": "yarn build --watch"
   },
   "author": "",
