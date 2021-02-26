@@ -1,6 +1,6 @@
 {
   "name": "cliyargs",
-  "version": "0.0.2-alpha",
+  "version": "0.0.21-alpha",
   "description": "Helpers to build cli apps using yargs",
   "main": "lib/index.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "prepublishOnly": "yarn build",
     "watch": "yarn build --watch"
   },
-  "author": "",
+  "author": "Ikenna Agbasimalo <michfx@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "@types/inquirer": "^7.3.1",
@@ -23,5 +23,19 @@
   "devDependencies": {
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1"
+  },
+  "keywords": [
+    "cli",
+    "command line",
+    "yargs",
+    "command line app"
+  ],
+  "bugs": {
+    "email": "michfx@gmail.com",
+    "url": "https://github.com/ikmich/cliyargs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ikmich/cliyargs"
   }
 }
