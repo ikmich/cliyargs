@@ -107,10 +107,6 @@ export const cliyargs = {
     }
 
     switch (mainCommand) {
-      case 'version':
-        console.log(process.version);
-        break;
-
       default:
         processorCb(mainCommand);
         break;
