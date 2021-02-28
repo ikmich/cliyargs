@@ -54,6 +54,12 @@ const conprint = {
 
 import inquirer from 'inquirer';
 
+/**
+ * Prompt user to enter input.
+ *
+ * @param name
+ * @param message
+ */
 const askInput = async (name: string = 'input', message: string = 'Enter input') => {
   const result = await inquirer.prompt({
     type: 'input',
@@ -64,6 +70,13 @@ const askInput = async (name: string = 'input', message: string = 'Enter input')
   return result[name];
 };
 
+/**
+ * Prompt user to select an option from a set of choices.
+ * @param name
+ * @param message
+ * @param choices
+ * @param multiple
+ */
 const askSelect = async (
   name: string = 'choice',
   message: string = 'Select choice',
@@ -83,10 +96,21 @@ const askSelect = async (
   return '';
 };
 
+/**
+ * Prompt user to select multiple options from a set of choices.
+ * @param name
+ * @param message
+ * @param choices
+ */
 const askSelectMultiple = async (name: string = 'choice', message: string = 'Select choice', choices: any[]) => {
   return await askSelect(name, message, choices, true);
 };
 
+/**
+ * Check if the result of an 'ask user input' is a yes.
+ *
+ * @param value
+ */
 function isYesInput(value: any) {
   return value && value.length && (value === 'yes' || value === 'y' || value === '1');
 }
