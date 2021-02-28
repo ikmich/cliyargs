@@ -3,3 +3,4 @@ lib
 .vscode
 .idea
 dist
+build
