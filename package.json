@@ -1,6 +1,6 @@
 {
   "name": "cliyargs",
-  "version": "0.0.5-alpha",
+  "version": "0.0.1-beta",
   "description": "Helpers to build cli apps using yargs",
   "main": "lib/index.js",
   "scripts": {
