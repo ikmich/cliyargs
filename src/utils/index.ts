@@ -53,3 +53,12 @@ const conprint = {
 };
 
 export { yes, no, conprint };
+
+/**
+ * Check if the result of an 'ask user input' is a yes.
+ *
+ * @param value
+ */
+export function isYesInput(value: any) {
+  return value && value.length && (value === 'yes' || value === 'y' || value === '1');
+}

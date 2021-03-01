@@ -3,7 +3,7 @@
 import {exec, ExecException, SendHandle, Serializable} from 'child_process';
 import yargs from 'yargs';
 import inquirer from 'inquirer';
-import {yes} from './utils';
+import {isYesInput, yes} from './utils';
 
 export type Stringx = string | null | undefined;
 
@@ -56,7 +56,7 @@ const askInput = async (name: string = 'input', message: string = 'Enter input')
 const askSelect = async (
   name: string = 'choice',
   message: string = 'Select choice',
-  choices: any[],
+  choices: any[] = [],
   multiple = false
 ) => {
   if (choices && choices.length > 0) {
@@ -81,15 +81,6 @@ const askSelect = async (
 const askSelectMultiple = async (name: string = 'choice', message: string = 'Select choice', choices: any[]) => {
   return await askSelect(name, message, choices, true);
 };
-
-/**
- * Check if the result of an 'ask user input' is a yes.
- *
- * @param value
- */
-function isYesInput(value: any) {
-  return value && value.length && (value === 'yes' || value === 'y' || value === '1');
-}
 
 export const cliyargs = {
   yargs,
