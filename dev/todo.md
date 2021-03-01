@@ -1,3 +1,3 @@
 # todo
-- [ ] Complete readme (fix bugs in readme)
+- [x] Complete readme (fix bugs in readme)
 - [ ] Write tests
