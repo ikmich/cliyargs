@@ -185,6 +185,8 @@ export const execShellCmd = async (cmd: string): Promise<string> => {
         reject(stderr);
         return;
       }
+
+      resolve(stdout);
     });
   });
 };
