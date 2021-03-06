@@ -1,0 +1,14 @@
+{
+  "info": {
+    "name": "update",
+    "args": [
+      "arg1",
+      "arg2"
+    ],
+    "options": {
+      "verbose": "true",
+      "email": "michfx@gmail.com"
+    }
+  },
+  "commandName": "update"
+}

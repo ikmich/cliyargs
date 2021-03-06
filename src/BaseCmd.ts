@@ -1,4 +1,4 @@
-import { execShellCmd, ICommandInfo, IBaseCmdOptions, Stringx } from './';
+import { IBaseCmdOptions, ICommandInfo, Stringx } from './';
 
 export class BaseCmd {
   public commandInfo: ICommandInfo;
@@ -16,19 +16,11 @@ export class BaseCmd {
   getArg(position: number): Stringx {
     if (position < 1) position = 1;
     if (position > this.args.length) return null;
-    return this.args[position - 1] || '';
+    return this.args[position - 1] ?? '';
   }
 
   /**
    * Executes actions to run the command.
    */
   async run() {}
-
-  protected async exec(cmd: string): Promise<string> {
-    try {
-      return await execShellCmd(cmd);
-    } catch (e) {
-      throw e;
-    }
-  }
 }

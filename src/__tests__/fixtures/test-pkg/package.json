@@ -1,0 +1,9 @@
+{
+  "name": "test-pkg",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {},
+  "bin": {
+    "test-pkg": "index.ts"
+  }
+}

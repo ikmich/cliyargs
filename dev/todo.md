@@ -1,2 +1,2 @@
 # todo
-- [ ] Write tests
+- [x] Write tests

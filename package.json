@@ -1,11 +1,12 @@
 {
   "name": "cliyargs",
-  "version": "0.1.0-beta",
+  "version": "0.2.0-beta",
   "description": "Helpers to build cli apps using yargs",
   "main": "lib/index.js",
   "scripts": {
     "build": "rm -rf lib && tsc",
-    "test": "jest --runInBand --detectOpenHandles --forceExit --passWithNoTests --verbose --useStderr",
+    "test": "jest --runInBand --forceExit --passWithNoTests --verbose --useStderr",
+    "test:cov": "yarn test --coverage",
     "prepublishOnly": "yarn build",
     "watch": "yarn build --watch"
   },
@@ -23,9 +24,11 @@
   "devDependencies": {
     "@types/jest": "^26.0.20",
     "jest": "^26.6.3",
+    "mock-argv": "^1.1.11",
     "mock-stdin": "^1.0.0",
     "prettier": "^2.2.1",
-    "ts-jest": "^26.5.2"
+    "ts-jest": "^26.5.2",
+    "ts-node": "^9.1.1"
   },
   "keywords": [
     "cli",

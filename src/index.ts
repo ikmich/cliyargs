@@ -1,9 +1,7 @@
-#!/usr/bin/env node
-
-import {exec, ExecException, SendHandle, Serializable} from 'child_process';
+import { exec, ExecException, SendHandle, Serializable } from 'child_process';
 import yargs from 'yargs';
 import inquirer from 'inquirer';
-import {isYesInput, yes} from './utils';
+import { isYesInput } from './utils';
 
 export type Stringx = string | null | undefined;
 
@@ -61,7 +59,7 @@ const askSelect = async (
 ) => {
   if (choices && choices.length > 0) {
     const result = await inquirer.prompt({
-      type: yes(multiple) ? 'checkbox' : 'list',
+      type: multiple ? 'checkbox' : 'list',
       name,
       message,
       choices
@@ -83,7 +81,7 @@ const askSelectMultiple = async (name: string = 'choice', message: string = 'Sel
 };
 
 export const cliyargs = {
-  yargs,
+  yargs: yargs,
 
   /**
    * Get the arguments string passed to the cli command for the calling context.
@@ -111,12 +109,8 @@ export const cliyargs = {
       options: {}
     };
 
-    if (!argv._) {
-      return {
-        name: '',
-        options: {},
-        args: []
-      };
+    if (!argv || !argv._) {
+      return commandInfo;
     }
 
     const commands = argv._;
@@ -145,26 +139,9 @@ export const cliyargs = {
    * @param commandInfo Info about the command
    * @param processorCb Callback function in which to process the command as preferred.
    */
-  async processCommand(commandInfo: ICommandInfo, processorCb: (commandName: string) => void) {
+  processCommand(commandInfo: ICommandInfo, processorCb: (commandName: string) => void) {
     let mainCommand = commandInfo.name;
-
-    // Protect from dangerous commands
-    switch (true) {
-      case /rm\s+/.test(mainCommand):
-      case /rmdir\s+/.test(mainCommand):
-      case /del\s+/.test(mainCommand):
-      case /unlink\s+/.test(mainCommand):
-      case /move\s+/.test(mainCommand):
-      case /cp\s+/.test(mainCommand):
-      case /copy\s+/.test(mainCommand):
-        return;
-    }
-
-    switch (mainCommand) {
-      default:
-        processorCb(mainCommand);
-        break;
-    }
+    processorCb(mainCommand);
   },
 
   askInput,

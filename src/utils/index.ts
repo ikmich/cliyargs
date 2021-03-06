@@ -1,7 +1,7 @@
 import chalk = require('chalk');
 
 function yes(o: any) {
-  if (typeof 0 === 'boolean') {
+  if (typeof o === 'boolean') {
     return o;
   }
 
@@ -28,9 +28,7 @@ const conprint = {
   },
   error: (msg: string | Error) => {
     if (typeof msg === 'string') {
-      if (msg.length > 0) {
-        console.log(chalk.red(msg));
-      }
+      console.log(chalk.red(msg));
     } else {
       console.log(chalk.red(msg.message));
     }

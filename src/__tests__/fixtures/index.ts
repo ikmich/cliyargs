@@ -4,6 +4,7 @@ export const commandInfoStub: ICommandInfo = {
   name: 'foo',
   args: ['print', 'ls', 'run'],
   options: {
-    output: 'file'
+    output: 'file',
+    verbose: true
   }
 };
