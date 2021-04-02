@@ -7,6 +7,8 @@ command line applications with NodeJS.
 
 ```typescript
 // 1. Setup your commands
+import { IClyCommandOpts } from './index';
+
 const argv = cliyargs.yargs
   .command('init', 'Initialize parameters')
   .command('print', 'Print out initialization outputs')
@@ -14,11 +16,11 @@ const argv = cliyargs.yargs
   .help().argv;
 
 // 2. Get the commandInfo
-const commandInfo: ICommandInfo = cliyargs.parseArgv(argv);
+const commandInfo: IClyCommandInfo<IClyCommandOpts> = cliyargs.parseArgv(argv);
 
 // 3. Process the commands
 cliyargs
-  .processCommand(commandInfo, async (commandName) => {
+  .processCommand(commandInfo, (commandName) => {
     // Get the command arguments
     const args = commandInfo.args;
 
@@ -32,13 +34,13 @@ cliyargs
        * your own preference.
        */
       case 'init':
-        await new InitCommand(commandInfo).run();
+        new InitCommand(commandInfo).run().catch((e) => {});
         break;
       case 'print':
-        await new PrintCommand(commandInfo).run();
+        new PrintCommand(commandInfo).run().catch((e) => {});
         break;
       case 'ls':
-        await new LsCommand(commandInfo).run();
+        new LsCommand(commandInfo).run().catch((e) => {});
         break;
       default:
       /*
@@ -82,24 +84,29 @@ class LsCommand extends BaseCmd {
 ## cliyargs functions
 
 ```typescript
-type T = {
+import { IClyCommandInfo } from './index';
+
+type cliyargs = {
   /**
    * Get the arguments string passed to the cli command for the calling context.
    */
   getCommandArgs(): string;
 
   /**
-   * Parse the argv parameter that is the result of cliyargs.yargs.command().command()...argv
+   * Parse the argv parameter that is the result of cliyargs.yargs.argv
    * @param argv
    */
-  parseArgv(argv: any): ICommandInfo;
+  parseYArgv(argv: any): IClyCommandInfo<T>;
 
   /**
    * Process the command.
    * @param commandInfo
-   * @param processorCb Callback function to process the command as preferred.
+   * @param processorCb Callback function in which to process the command as preferred.
    */
-  processCommand(commandInfo: ICommandInfo, processorCb: (commandName: string) => void): Promise<void>;
+  processCommand<T extends IClyCommandOpts>(
+    commandInfo: IClyCommandInfo<T>,
+    processorCb: (commandName: string) => void
+  ): void;
 
   /**
    * Prompt user to enter a string input.
@@ -132,15 +139,44 @@ type T = {
 ```typescript
 /**
  * This interface should be extended by an interface in the implementing code base to define
- * the contract for each command option switch/flag that will be used in the cli command.
+ * the contract for each command option switch/flag that can be passed in the cli command.
  */
+interface IClyCommandOpts {
+  [k: string]: any;
+}
+
 interface IBaseCmdOptions {
   [k: string]: any;
 }
 
-interface ICommandInfo {
-  name: string;
-  args: string[];
-  options: IBaseCmdOptions;
+interface IClyCommandInfo<T extends IClyCommandOpts> {
+  name: string; // The name of a command
+  args: string[]; // The arguments passed with the command
+  options: IBaseCmdOptions; // The option flags passed with the command
 }
+```
+
+## Classes
+
+```typescript
+import { IClyCommandInfo, IClyCommandOpts } from './index';
+
+class ClyBaseCommand<T extends IClyCommandOpts> {
+  args: string[];
+  commandInfo: IClyCommandInfo<T>;
+  name: string;
+  options: T;
+
+  constructor(commandInfo: IClyCommandInfo<T>) {}
+
+  getArg(position: number): Stringx {}
+
+  run(): Promise<void> {}
+}
+```
+
+# Custom types
+
+```typescript
+type Stringx = string | null | undefined;
 ```

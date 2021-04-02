@@ -1,7 +1,7 @@
-import { BaseCmd } from '../BaseCmd';
 import { commandInfoStub } from './fixtures';
+import { ClyBaseCommand, IClyCommandOpts } from '../index';
 
-class FooCmd extends BaseCmd {}
+class FooCmd extends ClyBaseCommand<IClyCommandOpts> {}
 
 describe('BaseCmd', () => {
   it('should create instance of BaseCmd', async () => {

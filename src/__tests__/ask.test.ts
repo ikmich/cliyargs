@@ -5,16 +5,17 @@ const mockStdin = require('mock-stdin');
 let stdin: MockSTDIN | null;
 
 describe('input prompt', () => {
-  beforeEach(() => {
+  function prepareStdin() {
     stdin = mockStdin.stdin();
-  });
+  }
 
-  afterEach(() => {
+  function restoreStdin() {
     stdin?.restore();
-  });
+  }
 
   describe('askInput()', () => {
     it('receives "yes/y" for an answer', async (done) => {
+      prepareStdin();
       cliyargs
         .askInput('input', 'Enter input')
         .then((result) => {
@@ -36,9 +37,11 @@ describe('input prompt', () => {
           done(e);
         });
       stdin?.send('yes\n');
+      restoreStdin();
     });
 
     it('receives "no/n" for an answer', async (done) => {
+      prepareStdin();
       cliyargs
         .askInput('input', 'Enter no answer')
         .then((result) => {
@@ -60,11 +63,13 @@ describe('input prompt', () => {
           done(e);
         });
       stdin?.send('n\n');
+      restoreStdin();
     });
   });
 
   describe('askSelect()', () => {
     it('receives option as answer', async (done) => {
+      prepareStdin();
       cliyargs
         .askSelect('choice', 'Select choice', ['a', 'b', 'c'])
         .then((result) => {
@@ -75,6 +80,7 @@ describe('input prompt', () => {
           done(e);
         });
       stdin?.send('2\n');
+      restoreStdin();
     });
 
     // it('receives no selection', (done) => {
@@ -93,6 +99,7 @@ describe('input prompt', () => {
 
   describe('askSelectMultiple', () => {
     it('receives multiple options as answer', async (done) => {
+      prepareStdin();
       cliyargs
         .askSelect('choice', 'Select choice', ['a', 'b', 'c', 'd'], true)
         .then((result) => {
@@ -103,6 +110,7 @@ describe('input prompt', () => {
           done(e);
         });
       stdin?.send('2,4\n');
+      restoreStdin();
     });
   });
 });

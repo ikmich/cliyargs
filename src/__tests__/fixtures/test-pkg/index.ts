@@ -1,28 +1,25 @@
 #!/usr/bin/env node
-import { cliyargs, ICommandInfo } from '../../../index';
-import { BaseCmd } from '../../../BaseCmd';
+import { ClyBaseCommand, cliyargs, IClyCommandInfo, IClyCommandOpts } from '../../../index';
 const Fs = require('fs');
 const Path = require('path');
 
 const outfileName = 'report.json';
 const outfile = Path.join(__dirname, outfileName);
 
-const commandInfo: ICommandInfo = cliyargs.parseArgv(
-  cliyargs.yargs
-    .command('list', 'List options')
-    .command('update', 'Update test-pkg')
-    .command('error', 'Run with error').argv
+const commandInfo: IClyCommandInfo<IClyCommandOpts> = cliyargs.parseYargv(
+  cliyargs.yargs.command('list', 'List options').command('update', 'Update test-pkg').command('error', 'Run with error')
+    .argv
 );
 
 export type TestPkgReport = {
-  info?: ICommandInfo;
+  info?: IClyCommandInfo<IClyCommandOpts>;
   commandName?: string;
   error?: any;
 };
 
 const report: TestPkgReport = {};
 
-class ListCommand extends BaseCmd {
+class ListCommand extends ClyBaseCommand<IClyCommandOpts> {
   async run(): Promise<any> {
     await super.run();
 
