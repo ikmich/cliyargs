@@ -1,60 +1,79 @@
 # Intro
 
-**cliyargs** builds on top of yargs and a few other cli libraries to provide a structured interface for developing
-command line applications with NodeJS.
+**cliyargs** builds on top of yargs to provide a structured class-based interface for developing command line
+applications with NodeJS.
 
-## Usage
+## Typical Usage
 
 ```typescript
-// 1. Setup your commands
-import { IClyCommandOpts } from './index';
+/* 1a. Setup your commands and get the argv variable. */
+import { BaseCmdOpts, cliyargs, CmdInfo } from 'cliyargs';
 
+// basic yargs setup
 const argv = cliyargs.yargs
+  // Define the commands
   .command('init', 'Initialize parameters')
-  .command('print', 'Print out initialization outputs')
-  .command('ls', 'List artifacts')
+  .command('print', 'Print outputs')
+  .command('list', 'List artifacts')
+
+  // Define options (command flags/switches)
+  .option('verbose', {
+    type: 'boolean',
+    description: 'Show more info'
+  })
+  .option('debug', {
+    type: 'boolean',
+    description: 'Enable debugging'
+  })
+
+  // Enable the 'help' command for your cli app
   .help().argv;
 
-// 2. Get the commandInfo
-const commandInfo: IClyCommandInfo<IClyCommandOpts> = cliyargs.parseArgv(argv);
+/* 1b. (Optional) Define interface for your command option flags. */
+interface MyCommandOptions extends BaseCmdOpts {
+  verbose: boolean;
+  debug: boolean;
+}
+
+/* 2. Pass the argv variable to get the commandInfo object */
+const commandInfo: CmdInfo<MyCommandOptions> = cliyargs.getCommandInfo(argv);
 
 // 3. Process the commands
-cliyargs
-  .processCommand(commandInfo, (commandName) => {
-    // Get the command arguments
-    const args = commandInfo.args;
+cliyargs.processCommand(commandInfo, (commandName) => {
+  // Get the command arguments if needed
+  const args = commandInfo.args;
 
-    // Get the command options (flags/switches)
-    const options = commandInfo.options;
+  // Get the command options (flags/switches) if needed
+  const options = commandInfo.options;
 
-    // Execute code according to the provided command name
-    switch (commandName) {
-      /* As shown below, 'cliyargs' provides the 'BaseCmd' class that you can extend to define a structured
-       * pattern for handling a command. However, You can choose to write code to handle each command according to
-       * your own preference.
-       */
-      case 'init':
-        new InitCommand(commandInfo).run().catch((e) => {});
-        break;
-      case 'print':
-        new PrintCommand(commandInfo).run().catch((e) => {});
-        break;
-      case 'ls':
-        new LsCommand(commandInfo).run().catch((e) => {});
-        break;
-      default:
-      /*
-       * No command. Handle as you like. You can choose to return an error or process the arguments or options as
-       * valid inputs.
-       */
-    }
-  })
-  .catch((e) => {
-    console.error(e);
-  });
+  // Execute code depending on the provided command
+  switch (commandName) {
+    case 'init':
+      /* See InitCommand class below */
+      new InitCommand().run();
+      break;
 
-// --- InitCommand.ts ----
-class InitCommand extends BaseCmd {
+    case 'print':
+      /* See PrintCommand class below */
+      new PrintCommand().run();
+      break;
+
+    case 'list':
+      /* See ListCommand class below */
+      new ListCommand().run();
+      break;
+    default:
+    /*
+     * No command. Handle as you like. You can choose to return an error or process the arguments or options as
+     * valid inputs.
+     */
+  }
+});
+
+// ---<InitCommand.ts>---
+import { BaseCmd } from 'cliyargs';
+
+class InitCommand extends BaseCmd<MyCommandOptions> {
   async run() {
     const options = this.options;
     const args = this.args;
@@ -62,8 +81,12 @@ class InitCommand extends BaseCmd {
   }
 }
 
-// --- PrintCommand.ts ----
-class PrintCommand extends BaseCmd {
+// ---</InitCommand.ts>---
+
+// ---<PrintCommand.ts>---
+import { BaseCmd } from 'cliyargs';
+
+class PrintCommand extends BaseCmd<MyCommandOptions> {
   async run() {
     const options = this.options;
     const args = this.args;
@@ -71,20 +94,25 @@ class PrintCommand extends BaseCmd {
   }
 }
 
-// ---- LsCommand.ts ----
-class LsCommand extends BaseCmd {
+// ---</PrintCommand.ts>---
+
+// ---<ListCommand.ts>---
+import { BaseCmd } from 'cliyargs';
+
+class ListCommand extends BaseCmd<MyCommandOptions> {
   async run() {
     const options = this.options;
     const args = this.args;
     // Process logic for the 'ls' command here
   }
 }
+
+// ---</ListCommand.ts>---
 ```
 
 ## cliyargs functions
 
 ```typescript
-import { IClyCommandInfo } from './index';
 
 type cliyargs = {
   /**
@@ -96,15 +124,15 @@ type cliyargs = {
    * Parse the argv parameter that is the result of cliyargs.yargs.argv
    * @param argv
    */
-  parseYArgv(argv: any): IClyCommandInfo<T>;
+  getCommandInfo(argv: any): CmdInfo<T>;
 
   /**
    * Process the command.
    * @param commandInfo
    * @param processorCb Callback function in which to process the command as preferred.
    */
-  processCommand<T extends IClyCommandOpts>(
-    commandInfo: IClyCommandInfo<T>,
+  processCommand<T extends BaseCmdOpts>(
+    commandInfo: CmdInfo<T>,
     processorCb: (commandName: string) => void
   ): void;
 
@@ -141,42 +169,36 @@ type cliyargs = {
  * This interface should be extended by an interface in the implementing code base to define
  * the contract for each command option switch/flag that can be passed in the cli command.
  */
-interface IClyCommandOpts {
+interface BaseCmdOpts {
   [k: string]: any;
 }
 
-interface IBaseCmdOptions {
-  [k: string]: any;
-}
-
-interface IClyCommandInfo<T extends IClyCommandOpts> {
+interface CmdInfo<T extends BaseCmdOpts> {
   name: string; // The name of a command
   args: string[]; // The arguments passed with the command
-  options: IBaseCmdOptions; // The option flags passed with the command
+  options: T; // The option flags passed with the command
 }
 ```
 
 ## Classes
 
 ```typescript
-import { IClyCommandInfo, IClyCommandOpts } from './index';
-
-class ClyBaseCommand<T extends IClyCommandOpts> {
+/**
+ * This class will be extended by a user-defined class to handle one command. There will be one class per command.
+ */
+abstract class BaseCmd<T extends BaseCmdOpts> {
   args: string[];
-  commandInfo: IClyCommandInfo<T>;
+  commandInfo: CmdInfo<T>;
   name: string;
   options: T;
 
-  constructor(commandInfo: IClyCommandInfo<T>) {}
+  constructor(commandInfo: CmdInfo<T>) {
+  }
 
-  getArg(position: number): Stringx {}
+  getArg(position: number): Stringx {
+  }
 
-  run(): Promise<void> {}
+  run(): Promise<void> {
+  }
 }
-```
-
-# Custom types
-
-```typescript
-type Stringx = string | null | undefined;
 ```

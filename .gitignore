@@ -6,3 +6,9 @@ dist
 build
 docs
 coverage
+dev
+dev/usage.ts
+
+packlib-config.js
+
+packlib--cliyargs-3.0.0

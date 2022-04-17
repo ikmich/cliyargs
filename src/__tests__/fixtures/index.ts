@@ -1,6 +1,6 @@
-import { IClyCommandInfo, IClyCommandOpts } from '../../index';
+import { CmdInfo, BaseCmdOpts } from '../../index';
 
-export const commandInfoStub: IClyCommandInfo<IClyCommandOpts> = {
+export const commandInfoStub: CmdInfo<BaseCmdOpts> = {
   name: 'foo',
   args: ['print', 'ls', 'run'],
   options: {

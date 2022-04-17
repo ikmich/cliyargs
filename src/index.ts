@@ -6,26 +6,33 @@ import { isYesInput } from './utils';
 export type Stringx = string | null | undefined;
 
 /**
- * This interface should be extended by an interface in the implementing code base to define
- * the contract for each command option switch/flag that will be used in the cli command.
+ * Interface representing command options (flags/switches). Extend this interface to define
+ * the contract for the command option flags that will be used in the cli command.
  */
-export interface IClyCommandOpts {
+export interface BaseCmdOpts {
   [k: string]: any;
 }
 
-export interface IClyCommandInfo<T extends IClyCommandOpts> {
+/**
+ * Defines contract for the command object as structured by cliyargs.
+ */
+export interface CmdInfo<T extends BaseCmdOpts> {
   name: string;
   args: string[];
   options: T;
 }
 
-export abstract class ClyBaseCommand<T extends IClyCommandOpts> {
-  public commandInfo: IClyCommandInfo<T>;
+/**
+ * Extend this abstract class to process the cli command logic. The command info and option flags are made available
+ * as properties of the class. Override and implement the `async run()` method.
+ */
+export abstract class BaseCmd<T extends BaseCmdOpts> {
+  public readonly commandInfo: CmdInfo<T>;
   protected name: string;
   protected args: string[] = [];
   protected options: T = {} as T;
 
-  constructor(commandInfo: IClyCommandInfo<T>) {
+  constructor(commandInfo: CmdInfo<T>) {
     this.commandInfo = commandInfo;
     this.name = commandInfo.name;
     this.args = commandInfo.args;
@@ -41,7 +48,8 @@ export abstract class ClyBaseCommand<T extends IClyCommandOpts> {
   /**
    * Executes actions to run the command.
    */
-  async run() {}
+  async run() {
+  }
 }
 
 export interface ISpawnCallbacks {
@@ -130,8 +138,8 @@ export const cliyargs = {
    * Parse the `argv` parameter that is the result of `cliyargs.yargs.argv`
    * @param argv
    */
-  parseYargv<T extends IClyCommandOpts>(argv: any): IClyCommandInfo<T> {
-    let commandInfo: IClyCommandInfo<T> = {
+  getCommandInfo<T extends BaseCmdOpts>(argv: any): CmdInfo<T> {
+    let commandInfo: CmdInfo<T> = {
       name: '',
       args: [],
       options: {} as T
@@ -167,10 +175,7 @@ export const cliyargs = {
    * @param commandInfo Info about the command
    * @param processorCb Callback function in which to process the command as preferred.
    */
-  processCommand<T extends IClyCommandOpts>(
-    commandInfo: IClyCommandInfo<T>,
-    processorCb: (commandName: string) => void
-  ) {
+  processCommand<T extends BaseCmdOpts>(commandInfo: CmdInfo<T>, processorCb: (commandName: string) => void) {
     let mainCommand = commandInfo.name;
     processorCb(mainCommand);
   },

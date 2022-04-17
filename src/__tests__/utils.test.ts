@@ -12,7 +12,7 @@ describe('utils', () => {
     expect(no('')).toBe(true);
     expect(no(false)).toBe(true);
     expect(no('foogma')).toBe(false);
-  })
+  });
 
   it('checks isYesInput()', () => {
     expect(isYesInput('y')).toBe(true);
@@ -30,7 +30,7 @@ describe('conprint', () => {
   });
 
   it('runs methods', () => {
-    let error:any = null;
+    let error: any = null;
     try {
       conprint.success('test conprint success');
       conprint.error('test conprint error');

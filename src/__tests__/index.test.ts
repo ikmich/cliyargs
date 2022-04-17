@@ -1,4 +1,4 @@
-import { cliyargs, execShellCmd, IClyCommandInfo, IClyCommandOpts } from '../index';
+import { cliyargs, execShellCmd, CmdInfo, BaseCmdOpts } from '../index';
 import { commandInfoStub } from './fixtures';
 
 const mockArgv = require('mock-argv');
@@ -14,7 +14,7 @@ describe('cliyargs', () => {
     expect(cliyargs).toHaveProperty('askSelectMultiple');
     expect(cliyargs).toHaveProperty('yargs');
     expect(cliyargs).toHaveProperty('getCommandArgs');
-    expect(cliyargs).toHaveProperty('parseYargv');
+    expect(cliyargs).toHaveProperty('getCommandInfo');
     expect(cliyargs).toHaveProperty('processCommand');
   });
 
@@ -59,14 +59,14 @@ describe('cliyargs', () => {
   describe('parseArgv()', () => {
     it('works', (done) => {
       const argv = cliyargs.yargs(['list', '--verbose=true']).argv;
-      const cmdInfo: IClyCommandInfo<IClyCommandOpts> = cliyargs.parseYargv(argv);
+      const cmdInfo: CmdInfo<BaseCmdOpts> = cliyargs.getCommandInfo(argv);
       expect(cmdInfo.name).toStrictEqual('list');
       expect(cmdInfo.options).toHaveProperty('verbose', 'true');
       done();
     });
 
     it('tests for !argv', () => {
-      const cmdInfo: IClyCommandInfo<IClyCommandOpts> = cliyargs.parseYargv(null);
+      const cmdInfo: CmdInfo<BaseCmdOpts> = cliyargs.getCommandInfo(null);
       expect(cmdInfo.name).toBe('');
     });
   });

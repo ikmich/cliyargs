@@ -1,14 +1,14 @@
 {
   "name": "cliyargs",
-  "version": "2.0.0",
-  "description": "Helpers to build cli apps using yargs",
-  "main": "lib/index.js",
+  "version": "3.0.0",
+  "description": "Simple class based library to build cli applications",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "rm -rf lib && tsc",
+    "build": "rm -rf dist && tsc",
     "test": "jest --runInBand --forceExit --verbose --useStderr --detectOpenHandles",
-    "test:cov": "yarn test --coverage",
-    "prepublishOnly": "yarn build",
-    "watch": "yarn build --watch",
+    "test:cov": "npm run test --coverage",
+    "prepublishOnly": "npm run build",
+    "watch": "npm run build --watch",
     "tscheck": "tsc --noEmit"
   },
   "author": "Ikenna Agbasimalo <michfx@gmail.com>",
@@ -34,8 +34,8 @@
   "keywords": [
     "cli",
     "command line",
-    "yargs",
-    "command line app"
+    "command line arguments",
+    "yargs"
   ],
   "bugs": {
     "email": "michfx@gmail.com",
@@ -47,6 +47,13 @@
   },
   "maintainers": [
     "Ikenna Agbasimalo <michfx@gmail.com>"
+  ],
+  "files": [
+    "dist/",
+    "changelog.md",
+    "LICENSE",
+    "package.json",
+    "README.md"
   ],
   "prettier": {
     "printWidth": 120,
