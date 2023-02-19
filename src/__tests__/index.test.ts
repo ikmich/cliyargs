@@ -1,4 +1,4 @@
-import { cliyargs, execShellCmd, CmdInfo, BaseCmdOpts } from '../index';
+import { cliyargs, execShellCmd, CmdInfo, CliOptions } from '../index';
 import { commandInfoStub } from './fixtures';
 
 const mockArgv = require('mock-argv');
@@ -59,14 +59,14 @@ describe('cliyargs', () => {
   describe('parseArgv()', () => {
     it('works', (done) => {
       const argv = cliyargs.yargs(['list', '--verbose=true']).argv;
-      const cmdInfo: CmdInfo<BaseCmdOpts> = cliyargs.getCommandInfo(argv);
+      const cmdInfo: CmdInfo<CliOptions> = cliyargs.getCommandInfo(argv);
       expect(cmdInfo.name).toStrictEqual('list');
       expect(cmdInfo.options).toHaveProperty('verbose', 'true');
       done();
     });
 
     it('tests for !argv', () => {
-      const cmdInfo: CmdInfo<BaseCmdOpts> = cliyargs.getCommandInfo(null);
+      const cmdInfo: CmdInfo<CliOptions> = cliyargs.getCommandInfo(null);
       expect(cmdInfo.name).toBe('');
     });
   });

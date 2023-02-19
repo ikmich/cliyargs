@@ -1,6 +1,6 @@
-import { CmdInfo, BaseCmdOpts } from '../../index';
+import { CmdInfo, CliOptions } from '../../index';
 
-export const commandInfoStub: CmdInfo<BaseCmdOpts> = {
+export const commandInfoStub: CmdInfo<CliOptions> = {
   name: 'foo',
   args: ['print', 'ls', 'run'],
   options: {

@@ -1,25 +1,25 @@
 #!/usr/bin/env node
-import { BaseCmd, cliyargs, CmdInfo, BaseCmdOpts } from '../../../index';
+import { BaseCmd, cliyargs, CmdInfo, CliOptions } from '../../../index';
 const Fs = require('fs');
 const Path = require('path');
 
 const outfileName = 'report.json';
 const outfile = Path.join(__dirname, outfileName);
 
-const commandInfo: CmdInfo<BaseCmdOpts> = cliyargs.getCommandInfo(
+const commandInfo: CmdInfo<CliOptions> = cliyargs.getCommandInfo(
   cliyargs.yargs.command('list', 'List options').command('update', 'Update test-pkg').command('error', 'Run with error')
     .argv
 );
 
 export type TestPkgReport = {
-  info?: CmdInfo<BaseCmdOpts>;
+  info?: CmdInfo<CliOptions>;
   commandName?: string;
   error?: any;
 };
 
 const report: TestPkgReport = {};
 
-class ListCommand extends BaseCmd<BaseCmdOpts> {
+class ListCommand extends BaseCmd<CliOptions> {
   async run(): Promise<any> {
     await super.run();
 

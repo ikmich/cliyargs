@@ -1,7 +1,7 @@
 import { commandInfoStub } from './fixtures';
-import { BaseCmd, BaseCmdOpts } from '../index';
+import { CliOptions, BaseCmd } from '../index';
 
-class FooCmd extends BaseCmd<BaseCmdOpts> {}
+class FooCmd extends BaseCmd<CliOptions> {}
 
 describe('BaseCmd', () => {
   it('should create instance of BaseCmd', async () => {

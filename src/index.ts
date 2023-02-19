@@ -3,30 +3,42 @@ import yargs from 'yargs';
 import inquirer from 'inquirer';
 import { isYesInput } from './utils';
 
+/**
+ * @deprecated
+ * (deprecated)
+ */
 export type Stringx = string | null | undefined;
 
 /**
- * Interface representing command options (flags/switches). Extend this interface to define
- * the contract for the command option flags that will be used in the cli command.
+ * @deprecated
+ * (deprecated) Use CliOptions
  */
 export interface BaseCmdOpts {
   [k: string]: any;
 }
 
 /**
+ * Interface representing command options (flags/switches). Extend this interface to define
+ * the contract for the command option flags that will be used in the cli command.
+ */
+export interface CliOptions {
+  [k: string]: any;
+}
+
+/**
  * Defines contract for the command object as structured by cliyargs.
  */
-export interface CmdInfo<T extends BaseCmdOpts> {
+export interface CmdInfo<T extends CliOptions> {
   name: string;
   args: string[];
   options: T;
 }
 
 /**
- * Extend this abstract class to process the cli command logic. The command info and option flags are made available
+ * Extend this class to process the cli command logic. The command info and option flags are made available
  * as properties of the class. Override and implement the `async run()` method.
  */
-export abstract class BaseCmd<T extends BaseCmdOpts> {
+export abstract class BaseCmd<T extends CliOptions> {
   public readonly commandInfo: CmdInfo<T>;
   protected name: string;
   protected args: string[] = [];
@@ -39,7 +51,7 @@ export abstract class BaseCmd<T extends BaseCmdOpts> {
     this.options = commandInfo.options;
   }
 
-  getArg(position: number): Stringx {
+  getArg(position: number): string | null | undefined {
     if (position < 1) position = 1;
     if (position > this.args.length) return null;
     return this.args[position - 1] ?? '';
@@ -50,6 +62,25 @@ export abstract class BaseCmd<T extends BaseCmdOpts> {
    */
   async run() {
   }
+}
+
+export interface CommandDef {
+  name: string;
+  description: string;
+}
+
+export type YargsOptionType = 'array' | 'count' | yargs.PositionalOptionsType | undefined;
+
+export interface OptionFlagDef {
+  name: string;
+  alias?: string | string[];
+  type: YargsOptionType;
+  description?: string;
+}
+
+export interface CliConfiguration {
+  commands: CommandDef[];
+  optionFlags?: OptionFlagDef[];
 }
 
 export interface ISpawnCallbacks {
@@ -113,6 +144,15 @@ const askSelectMultiple = async (name: string = 'choice', message: string = 'Sel
   return await askSelect(name, message, choices, true);
 };
 
+export type ArgvType = { [p: string]: unknown; _: (string | number)[]; $0: string };
+
+export type CommandHandler<T> = (commandInfo: CmdInfo<T>, argv?: ArgvType) => any;
+
+export type BootstrapResult<T> = {
+  argv: ArgvType;
+  commandInfo: CmdInfo<T>;
+};
+
 export const cliyargs = {
   /**
    * @type yargs
@@ -138,7 +178,7 @@ export const cliyargs = {
    * Parse the `argv` parameter that is the result of `cliyargs.yargs.argv`
    * @param argv
    */
-  getCommandInfo<T extends BaseCmdOpts>(argv: any): CmdInfo<T> {
+  getCommandInfo<T extends CliOptions>(argv: any): CmdInfo<T> {
     let commandInfo: CmdInfo<T> = {
       name: '',
       args: [],
@@ -169,13 +209,14 @@ export const cliyargs = {
 
     return commandInfo;
   },
+
   /**
    * Process the command.
    *
    * @param commandInfo Info about the command
    * @param processorCb Callback function in which to process the command as preferred.
    */
-  processCommand<T extends BaseCmdOpts>(commandInfo: CmdInfo<T>, processorCb: (commandName: string) => void) {
+  processCommand<T extends CliOptions>(commandInfo: CmdInfo<T>, processorCb: (commandName: string) => void) {
     let mainCommand = commandInfo.name;
     processorCb(mainCommand);
   },
@@ -183,7 +224,60 @@ export const cliyargs = {
   askInput,
   askSelect,
   askSelectMultiple,
-  isYesInput
+  isYesInput,
+
+  /**
+   * Bootstrap your cli and setup the command handling logic.
+   * @param configuration
+   * @param handler
+   */
+  bootstrap<T>(configuration: CliConfiguration, handler: CommandHandler<T>): BootstrapResult<T> {
+    const argv = (() => {
+      let argv = cliyargs.yargs;
+
+      for (let commandDef of configuration.commands) {
+        argv.command(commandDef.name, commandDef.description);
+      }
+
+      if (configuration.optionFlags) {
+        for (let optionFlag of configuration.optionFlags) {
+          if (optionFlag.name) {
+            argv.option(optionFlag.name, {
+              type: optionFlag.type,
+              desc: optionFlag.description
+            });
+
+            if (optionFlag.alias) {
+              const aliasVal = (() => {
+                if (typeof optionFlag.alias === 'string') {
+                  return [optionFlag.alias];
+                }
+
+                if (Array.isArray(optionFlag.alias)) {
+                  return optionFlag.alias;
+                }
+
+                return String(optionFlag.alias);
+              })();
+
+              argv.alias(optionFlag.name, aliasVal);
+            }
+          }
+        }
+      }
+
+      return argv.help().argv;
+    })();
+
+    const commandInfo: CmdInfo<T> = this.getCommandInfo(argv);
+
+    handler(commandInfo, argv);
+
+    return {
+      argv,
+      commandInfo
+    };
+  }
 };
 
 export const execShellCmd = async (cmd: string): Promise<string> => {

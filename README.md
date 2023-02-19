@@ -1,79 +1,81 @@
-# Intro
+**cliyargs** builds on top of the popular [yargs](https://yargs.js.org/) to provide a class-based structure for
+developing command line applications.
 
-**cliyargs** builds on top of yargs to provide a structured class-based interface for developing command line
-applications with NodeJS.
+## Usage
 
-## Typical Usage
+The following example assumes a cli with the following commands: `init`, `list`, `print`; and the following option
+flags: `--verbose` and `--debug`.
+
+##### a) Setup/Bootstrap
 
 ```typescript
-/* 1a. Setup your commands and get the argv variable. */
-import { BaseCmdOpts, cliyargs, CmdInfo } from 'cliyargs';
-
-// basic yargs setup
-const argv = cliyargs.yargs
-  // Define the commands
-  .command('init', 'Initialize parameters')
-  .command('print', 'Print outputs')
-  .command('list', 'List artifacts')
-
-  // Define options (command flags/switches)
-  .option('verbose', {
-    type: 'boolean',
-    description: 'Show more info'
-  })
-  .option('debug', {
-    type: 'boolean',
-    description: 'Enable debugging'
-  })
-
-  // Enable the 'help' command for your cli app
-  .help().argv;
-
-/* 1b. (Optional) Define interface for your command option flags. */
-interface MyCommandOptions extends BaseCmdOpts {
+// Define interface contract for your command option flags.
+export interface AppCliOptions extends CliOptions {
   verbose: boolean;
   debug: boolean;
 }
 
-/* 2. Pass the argv variable to get the commandInfo object */
-const commandInfo: CmdInfo<MyCommandOptions> = cliyargs.getCommandInfo(argv);
+// Step 2: Define your cli configuration.
+const configuration: CliConfiguration = {
+  commands: [
+    {
+      name: 'init',
+      description: 'Initialize parameters'
+    },
+    {
+      name: 'print',
+      description: 'Print outputs'
+    },
+    {
+      name: 'list',
+      description: 'List artifacts'
+    }
+  ],
+  optionFlags: [
+    {
+      name: 'verbose',
+      alias: 'v',
+      description: "Show more info",
+      type: 'boolean'
+    },
+    {
+      name: 'debug',
+      description: "Enable debugging",
+      type: 'boolean'
+    },
+  ]
+};
 
-// 3. Process the commands
-cliyargs.processCommand(commandInfo, (commandName) => {
-  // Get the command arguments if needed
-  const args = commandInfo.args;
-
-  // Get the command options (flags/switches) if needed
-  const options = commandInfo.options;
-
-  // Execute code depending on the provided command
-  switch (commandName) {
+// Define your command handler function.
+const handler: CommandHandler<AppCliOptions> = async (commandInfo: CmdInfo<AppCliOptions>) => {
+  switch (commandInfo.name) {
     case 'init':
-      /* See InitCommand class below */
-      new InitCommand().run();
+      // See InitCommand class example further below
+      await new InitCommand(commandInfo).run();
       break;
-
     case 'print':
-      /* See PrintCommand class below */
-      new PrintCommand().run();
+      // See PrintCommand class example further below
+      await new PrintCommand(commandInfo).run();
       break;
-
     case 'list':
-      /* See ListCommand class below */
-      new ListCommand().run();
+      // See ListCommand class example further below
+      await new ListCommand(commandInfo).run();
       break;
-    default:
-    /*
-     * No command. Handle as you like. You can choose to return an error or process the arguments or options as
-     * valid inputs.
-     */
   }
-});
+};
 
-// ---<InitCommand.ts>---
-import { BaseCmd } from 'cliyargs';
+// Bootstrap!
+cliyargs.bootstrap(configuration, handler);
+```
 
-class InitCommand extends BaseCmd<MyCommandOptions> {
+##### b) Extend BaseCmd to handle command logic.
+
+Sub-classes of the `BaseCmd` class have access to the command options and arguments, making way for a clean and simple
+class-based implementation of your cli application. `cliyargs` offers this class as a convenience, and it is not
+compulsory to go this route when using `cliyargs` - you are free to structure your application any way you like.
+
+```typescript
+export class InitCommand extends BaseCmd<AppCliOptions> {
   async run() {
     const options = this.options;
     const args = this.args;
@@ -81,124 +83,19 @@ class InitCommand extends BaseCmd<MyCommandOptions> {
   }
 }
 
-// ---</InitCommand.ts>---
+export class ListCommand extends BaseCmd<AppCliOptions> {
+  async run() {
+    const options = this.options;
+    const args = this.args;
+    // Process logic for the 'list' command here
+  }
+}
 
-// ---<PrintCommand.ts>---
-import { BaseCmd } from 'cliyargs';
-
-class PrintCommand extends BaseCmd<MyCommandOptions> {
+export class PrintCommand extends BaseCmd<AppCliOptions> {
   async run() {
     const options = this.options;
     const args = this.args;
     // Process logic for the 'print' command here
-  }
-}
-
-// ---</PrintCommand.ts>---
-
-// ---<ListCommand.ts>---
-import { BaseCmd } from 'cliyargs';
-
-class ListCommand extends BaseCmd<MyCommandOptions> {
-  async run() {
-    const options = this.options;
-    const args = this.args;
-    // Process logic for the 'ls' command here
-  }
-}
-
-// ---</ListCommand.ts>---
-```
-
-## cliyargs functions
-
-```typescript
-
-type cliyargs = {
-  /**
-   * Get the arguments string passed to the cli command for the calling context.
-   */
-  getCommandArgs(): string;
-
-  /**
-   * Parse the argv parameter that is the result of cliyargs.yargs.argv
-   * @param argv
-   */
-  getCommandInfo(argv: any): CmdInfo<T>;
-
-  /**
-   * Process the command.
-   * @param commandInfo
-   * @param processorCb Callback function in which to process the command as preferred.
-   */
-  processCommand<T extends BaseCmdOpts>(
-    commandInfo: CmdInfo<T>,
-    processorCb: (commandName: string) => void
-  ): void;
-
-  /**
-   * Prompt user to enter a string input.
-   * @param name Identifier
-   * @param message Prompt text shown to the user.
-   */
-  askInput: (name?: string, message?: string) => Promise<Object>;
-
-  /**
-   * Prompt user to select an option from a set of choices.
-   * @param name {string} Identifier
-   * @param message {string} Prompt text shown to the user.
-   * @param choices {string[]} Options to choose from
-   * @param multiple {boolean} Whether user can select multiple options
-   */
-  askSelect: (name?: string, message?: string, choices: any[] = [], multiple?: boolean) => Promise<Object>;
-
-  /**
-   * Prompt user to select multiple options from a set of choices.
-   * @param name {string} Identifier
-   * @param message {string} Prompt text shown to the user.
-   * @param choices {string[]} Options to choose from
-   */
-  askSelectMultiple: (name?: string, message?: string, choices: any[] = []) => Promise<Object>;
-};
-```
-
-## Interfaces
-
-```typescript
-/**
- * This interface should be extended by an interface in the implementing code base to define
- * the contract for each command option switch/flag that can be passed in the cli command.
- */
-interface BaseCmdOpts {
-  [k: string]: any;
-}
-
-interface CmdInfo<T extends BaseCmdOpts> {
-  name: string; // The name of a command
-  args: string[]; // The arguments passed with the command
-  options: T; // The option flags passed with the command
-}
-```
-
-## Classes
-
-```typescript
-/**
- * This class will be extended by a user-defined class to handle one command. There will be one class per command.
- */
-abstract class BaseCmd<T extends BaseCmdOpts> {
-  args: string[];
-  commandInfo: CmdInfo<T>;
-  name: string;
-  options: T;
-
-  constructor(commandInfo: CmdInfo<T>) {
-  }
-
-  getArg(position: number): Stringx {
-  }
-
-  run(): Promise<void> {
   }
 }
 ```
