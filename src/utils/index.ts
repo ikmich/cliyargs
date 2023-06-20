@@ -1,4 +1,4 @@
-import chalk = require('chalk');
+import chalk from 'chalk';
 
 function yes(o: any) {
   if (typeof o === 'boolean') {
@@ -58,5 +58,5 @@ export { yes, no, conprint };
  * @param value
  */
 export function isYesInput(value: any) {
-  return value && value.length && (value === 'yes' || value === 'y' || value === '1');
+  return value && value.length && (value.toLowerCase() === 'yes' || value.toLowerCase() === 'y' || value === '1');
 }

@@ -105,6 +105,7 @@ const askInput = async (name: string = 'input', message: string = 'Enter input')
     message
   });
 
+  // @ts-ignore
   return result[name];
 };
 
@@ -129,6 +130,7 @@ const askSelect = async (
       choices
     });
 
+    // @ts-ignore
     return result[name] || '';
   }
   return '';
@@ -146,9 +148,9 @@ const askSelectMultiple = async (name: string = 'choice', message: string = 'Sel
 
 export type ArgvType = { [p: string]: unknown; _: (string | number)[]; $0: string };
 
-export type CommandHandler<T> = (commandInfo: CmdInfo<T>, argv?: ArgvType) => any;
+export type CommandHandler<T extends CliOptions> = (commandInfo: CmdInfo<T>, argv?: ArgvType) => any;
 
-export type BootstrapResult<T> = {
+export type BootstrapResult<T extends CliOptions> = {
   argv: ArgvType;
   commandInfo: CmdInfo<T>;
 };
@@ -227,11 +229,11 @@ export const cliyargs = {
   isYesInput,
 
   /**
-   * Bootstrap your cli and setup the command handling logic.
+   * Bootstrap your cli and set up the command handling logic.
    * @param configuration
    * @param handler
    */
-  bootstrap<T>(configuration: CliConfiguration, handler: CommandHandler<T>): BootstrapResult<T> {
+  bootstrap<T extends CliOptions>(configuration: CliConfiguration, handler: CommandHandler<T>): BootstrapResult<T> {
     const argv = (() => {
       let argv = cliyargs.yargs;
 
